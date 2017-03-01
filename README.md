@@ -15,4 +15,4 @@ Run
 
 Query
 
-  curl --data "query=db.users.insert({name: 'Goofy'})" http://localhost:3000
+    curl --data "query=db.users.insert({name: 'Goofy'})" http://localhost:3000
