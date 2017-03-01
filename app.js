@@ -1,6 +1,7 @@
 var express = require('express'),
     app = express(),
-    bodyParser = require('body-parser')
+    bodyParser = require('body-parser'),
+    MongoClient = require('mongodb').MongoClient
 
 const PORT = process.env.PORT || 3000
 
@@ -12,10 +13,22 @@ const MONGO_URI = process.env.MONGO_URI
 
 app.use(bodyParser.urlencoded({extended: false}))
 
-app.post('/', function (req, res) {
-  res.send(req.body)
-})
+MongoClient.connect(MONGO_URI, function(err, db) {
 
-app.listen(PORT, function () {
-  console.log('Mongo Wrapper listening on Port '+PORT+', wrapping mongodb with connection string "'+MONGO_URI+'"')
+  app.post('/', function (req, res) {
+    var query = req.body.query,
+      result = db.eval(query)
+        .then(function (result) {
+          res.send(result)
+        })
+        .catch(function (err) {
+          console.log("MONGO ERROR", err)
+          res.status(400).send('Bad Request')
+        })
+  })
+
+  app.listen(PORT, function () {
+    console.log('Mongo Wrapper listening on Port '+PORT+', wrapping mongodb with connection string "'+MONGO_URI+'"')
+  })
+
 })
