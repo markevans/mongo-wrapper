@@ -19,6 +19,7 @@ MongoClient.connect(MONGO_URI, function(err, db) {
     var query = req.body.query,
       result = db.eval(query)
         .then(function (result) {
+          res.set('Access-Control-Allow-Origin', '*')
           res.send(result)
         })
         .catch(function (err) {
